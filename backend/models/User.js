@@ -13,6 +13,7 @@ const User = sequelize.define(
         pass:{type:Sequelize.STRING(100), allowNull: false},
         email:{type:Sequelize.STRING(100), allowNull: false, unique: true},
         dob:{type:Sequelize.DATE, allowNull: false}
+        //'YYYY-MM-DD'
     },{
         freezeTableName: true
     }

@@ -3,7 +3,7 @@
 const Sequelize = require('sequelize');
 
 
-const sequelize = new Sequelize('foodswap', 'swap', '12345', {
+const sequelize = new Sequelize('foodswap', 'root', 'MyNewPass', {
     host: 'localhost',
     port: 0000,
     dialect: 'mysql',
@@ -25,4 +25,3 @@ sequelize.authenticate().then(function() {
 
 
 module.exports = sequelize;
-
