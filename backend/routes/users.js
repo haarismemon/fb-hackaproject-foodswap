@@ -52,6 +52,9 @@ router.post('/signup', function(req, res, next){
             
 /***
  *  User login
+ *  Return status: 0 - fail, 1 - success
+ *         message: success or error message
+ *         profile: the fields of user logged in
  */
 router.post('/login', function(req, res, next){
     let email = req.body.email;
@@ -68,6 +71,7 @@ router.post('/login', function(req, res, next){
         .catch(function(err){
             console.log('DB connection error');
             res.json({
+                profile: null,
                 msg: 'DB connection error',
                 status:0
             });
