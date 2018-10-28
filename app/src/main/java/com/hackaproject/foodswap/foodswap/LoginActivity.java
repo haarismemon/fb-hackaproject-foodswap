@@ -1,6 +1,8 @@
 package com.hackaproject.foodswap.foodswap;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,17 +22,25 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText login_email;
     private EditText login_password;
-    private Button login_button;
     private TextView login_register;
+
+    public static final String LOGGED_IN = "LOGGED_IN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        final SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("DATA", Context.MODE_PRIVATE);
+        boolean isLoggedIn = sharedPreferences.getBoolean(LoginActivity.LOGGED_IN, false);
+
+        if(isLoggedIn) {
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            startActivity(intent);
+        }
+
         login_email = (EditText) findViewById(R.id.login_email);
         login_password = (EditText) findViewById(R.id.login_password);
-        login_button = (Button) findViewById(R.id.login_button);
         login_register = (TextView) findViewById(R.id.login_register);
 
         login_register.setOnClickListener(new View.OnClickListener() {
@@ -53,11 +63,13 @@ public class LoginActivity extends AppCompatActivity {
                         String last_name = jsonResponse.getString("last_name");
                         String email = jsonResponse.getString("email");
 
-                        Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         intent.putExtra("first_name", first_name);
                         intent.putExtra("last_name", last_name);
                         intent.putExtra("email", email);
-                        LoginActivity.this.startActivity(intent);
+                        startActivity(intent);
+
+                        sharedPreferences.edit().putBoolean(LOGGED_IN, true).apply();
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
                         builder.setMessage("Login Failed")

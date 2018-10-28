@@ -9,20 +9,21 @@ import java.util.Map;
 
 public class RegisterRequest extends StringRequest {
 
-    private static final String REGISTER_REQUEST_URL = "https://localhost:4000/";
+    private static final String REGISTER_REQUEST_URL = "https://localhost:4000/users/signup";
     private Map<String, String> params;
 
-    public RegisterRequest(User user, Response.Listener<String> listener) {
-        super(Method.POST, REGISTER_REQUEST_URL, listener, null);
+    public RegisterRequest(User user, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        super(Method.POST, REGISTER_REQUEST_URL, listener, errorListener);
 
         params = new HashMap<>();
-        params.put("first_name", user.getFirst_name());
-        params.put("last_name", user.getLast_name());
+        params.put("fname", user.getFirst_name());
+        params.put("lname", user.getLast_name());
         params.put("email", user.getEmail());
-        params.put("password", user.getPassword());
+        params.put("pass", user.getPassword());
         params.put("gender", user.getGender());
         params.put("nationality", user.getNationality());
         params.put("dietary", user.getDietary());
+        params.put("dob", user.getDob());
     }
 
     @Override
