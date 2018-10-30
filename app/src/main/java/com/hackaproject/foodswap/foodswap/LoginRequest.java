@@ -12,8 +12,8 @@ public class LoginRequest extends StringRequest {
     private static final String LOGIN_REQUEST_URL = "https://localhost:4000/";
     private Map<String, String> params;
 
-    public LoginRequest(String email, String password, Response.Listener<String> listener) {
-        super(Method.POST, LOGIN_REQUEST_URL, listener, null);
+    public LoginRequest(String email, String password, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        super(Method.POST, LOGIN_REQUEST_URL, listener, errorListener);
 
         params = new HashMap<>();
         params.put("email", email);

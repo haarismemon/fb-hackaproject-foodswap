@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.hackaproject.foodswap.foodswap.DataModel.User;
 
@@ -34,7 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_register);
 
         input_first_name = (EditText) findViewById(R.id.input_first_name);
         input_last_name = (EditText) findViewById(R.id.input_last_name);
@@ -48,6 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void submit(View view) {
+        Toast.makeText(this, "Submit button clicked", Toast.LENGTH_SHORT).show();
         User user = new User();
 
         user.setFirst_name(input_first_name.getText().toString());
@@ -74,10 +76,11 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 try {
+                    Toast.makeText(RegisterActivity.this, "Response Received", Toast.LENGTH_SHORT).show();
                     JSONObject jsonResponse = new JSONObject(response);
                     boolean success = jsonResponse.getBoolean("success");
 
-                    if(success) {
+                    if (success) {
                         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                         RegisterActivity.this.startActivity(intent);
                     } else {
@@ -91,11 +94,16 @@ public class RegisterActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("FoodSwap", "Error Message. Failed Response" + error);
+            }
         });
 
         RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
         queue.add(registerRequest);
-
+        queue.start();
     }
 
 }

@@ -1,0 +1,13 @@
+package com.hackaproject.foodswap.foodswap;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+public class BookPlanActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_book_plan);
+    }
+}
