@@ -15,7 +15,7 @@
    ```bash
    {"email":"example@hotmail.com", "pass":"12345" }
    ```
-5. Return value on succesful request is a JSON object that has 3 fields: 
+5. The response from the server on succesful request is a JSON object with 3 fields: 
 
             status: 0 - fail, 1 - success
             message: success or error message
@@ -32,20 +32,21 @@
 
 4. JSON should contain:
 
-            'fname' -> first name, not null
-            'lname' -> last name, not null
-            'gender' -> 0-male
-                        1-female 
-                        2-other 
-                        3-prefer not to say
-                        , not null
-            'nationality' -> ethnicity, not null
-            'dietary' -> dietary requirements, allow null
-            'pass' -> password, not null
-            'email'-> email address, not null
-            'dob' -> date of birth in 'YYYY-MM-DD', not null
+            'fname': first name, not null
+            'lname': last name, not null
+            'gender': not null
+                      0-male
+                      1-female 
+                      2-other 
+                      3-prefer not to say
+                      
+            'nationality': ethnicity, not null
+            'dietary': dietary requirements, allow null
+            'pass': password, not null
+            'email': email address, not null
+            'dob': date of birth in 'YYYY-MM-DD', not null
    
-5. Return value on succesful request is a JSON object that has 2 fields: 
+5. The response from the server on succesful request is a JSON object with 2 fields: 
 
             status: 0 - fail, 1 - success
             message: success or error message
