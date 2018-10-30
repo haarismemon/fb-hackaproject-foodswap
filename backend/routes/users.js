@@ -73,8 +73,7 @@ router.post('/login', function(req, res, next){
         console.log("User found. Client has logged in!"+ result);
         res.json({
             profile:result,
-            email:result.email,
-            uid:result.email,
+            uid:result.id,
             msg:'User found. For gender field: 0-male, 1-female, 2-other, 3-prefer not to say.',
             status:1
         });
@@ -82,7 +81,6 @@ router.post('/login', function(req, res, next){
         .catch(function(err){
             console.log('Login failed! DB connection error: '+err);
             res.json({
-                profile: null,
                 msg: 'DB connection error: '+err,
                 status:0
             });
