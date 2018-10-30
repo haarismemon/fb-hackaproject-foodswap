@@ -1,10 +1,6 @@
-// const Sequelize = require('sequelize-oracle');
-// const Sequelize = require('cu8-sequelize-oracle');
 const Sequelize = require('sequelize');
-
-
-const sequelize = new Sequelize('foodswap', 'root', 'MyNewPass', {
-    host: 'localhost',
+const sequelize = new Sequelize('heroku_d808d9b852a05ac', 'b6c156bfb47734', '98b17f54', {
+    host: 'eu-cdbr-west-02.cleardb.net',
     port: 0000,
     dialect: 'mysql',
     pool: {
@@ -22,6 +18,5 @@ sequelize.authenticate().then(function() {
 }).catch(function(err) {
     console.log("DB connection failed. "+err);
 });
-
 
 module.exports = sequelize;
