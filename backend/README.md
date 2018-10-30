@@ -8,9 +8,7 @@
 
 3. Content-Type is `application/json`
 
-4. JSON should contain fields 'email' and 'pass'
-   
-   Example
+4. JSON should contain fields 'email' and 'pass'. Example:
    
             {"email":"example@hotmail.com", "pass":"12345" }
 
