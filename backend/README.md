@@ -12,9 +12,8 @@
    
    Example
    
-   ```bash
-   {"email":"example@hotmail.com", "pass":"12345" }
-   ```
+            {"email":"example@hotmail.com", "pass":"12345" }
+
 5. The response from the server on succesful request is a JSON object with 3 fields: 
 
             status: 0 - fail, 1 - success
