@@ -118,7 +118,7 @@
             msg: success or error message
             event_status: the current status of the event (can be 0-pending, 1-confirm, 2-done), will return null upon unsuccessful request
             partner_info: if event is paired, return the event object of the partner, otherwise null
-                          { uid: id of the partner, 
+                          { id: id of the partner, 
                             food: the food partner wants to cook, 
                             nationality: partner's ethnicity, 
                             lname: last name of the partner, 
