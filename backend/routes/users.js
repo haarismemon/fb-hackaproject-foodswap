@@ -135,7 +135,16 @@ router.post('/list', function(req, res, next){
  *  req: uid, date, food
  *  Return status: 0 - fail, 1 - success
  *         msg: success or error message
- *         event_object: 0-pending, 1-confirm, 2-done
+ *         event_object: {
+ *              id: event id
+ *              uid: id of the user who created the even
+ *              food: food the user wants to cook
+ *              status: 0-pending, 1-confirm, 2-done
+ *              date: the datetime that the event will take place
+ *              partnerid: initially null, but when paired will return the id of the paired user
+ *              updatedAt: the datetime of the row being updated in the database
+ *              createdAt: the datetime of the row being created in the database
+ *          }
  */ 
 router.post('/newevent', function(req, res, next){
     let eventA = {
@@ -201,7 +210,7 @@ router.post('/newevent', function(req, res, next){
  *         msg: success or error message
  *         event_status: the current status of the event, on false request will return null
  *         partner_info: if event is paired, returns the event object of the partner, otherwise null
- *                       {uid, food, nationality, lname, fname, gender, dietary, dob}
+ *                       {id, food, nationality, lname, fname, gender, dietary, dob}
  *
  ***/ 
 router.post('/checkevent',function(req, res, next){

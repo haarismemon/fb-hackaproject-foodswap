@@ -95,11 +95,20 @@
             'food': food the user wants to cook, not null
             'date': in the format 'YYYY-MM-DD', not null
    
-5. The response from the server on succesful request is a JSON object with 2 fields: 
+5. The response from the server on succesful request is a JSON object with 3 fields: 
 
             status: 0 - fail, 1 - success
             msg: success or error message
-            event_status: 0-pending, 1-confirm, 2-done
+            event_object: {
+               id: event id
+               uid: id of the user who created the even
+               food: food the user wants to cook
+               status: 0-pending, 1-confirm, 2-done
+               date: the datetime that the event will take place
+               partnerid: initially null, but when paired will return the id of the paired user
+               updatedAt: the datetime of the row being updated in the database
+               createdAt: the datetime of the row being created in the database
+            }
             
             
 ## Check event state request
