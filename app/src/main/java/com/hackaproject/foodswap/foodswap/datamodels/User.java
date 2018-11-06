@@ -1,4 +1,4 @@
-package com.hackaproject.foodswap.foodswap.DataModel;
+package com.hackaproject.foodswap.foodswap.datamodels;
 
 public class User {
 
