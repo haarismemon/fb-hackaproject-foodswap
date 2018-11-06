@@ -10,12 +10,19 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Specify the types of food you can cook"
-        android:id="@+id/input_food_to_cook" />
+        android:hint="Enter the food you would like to cook"
+        android:id="@+id/input_food" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter the date to meet up"
+        android:id="@+id/input_date" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Plan!"/>
+        android:text="Plan!"
+        android:onClick="bookEvent"/>
 
 </LinearLayout>
