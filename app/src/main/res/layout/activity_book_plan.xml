@@ -1,28 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BookPlanActivity"
-    android:orientation="vertical">
+    android:padding="16dp"
+    tools:context=".BookPlanActivity">
 
-    <EditText
-        android:layout_width="match_parent"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Enter the food you would like to cook"
-        android:id="@+id/input_food" />
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter the date to meet up"
-        android:id="@+id/input_date" />
+        <AutoCompleteTextView
+            android:id="@+id/input_food"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:hint="Enter the food you would like to cook"
+            android:inputType="textCapSentences"
+            android:maxLines="1" />
 
-    <Button
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Plan!"
-        android:onClick="bookEvent"/>
+        android:text="Enter the date to meet up"
+        app:layout_constraintBottom_toTopOf="@+id/input_date"
+        app:layout_constraintStart_toStartOf="@+id/input_date" />
 
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/input_date"
+        android:layout_width="199dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="?attr/editTextBackground"
+        android:onClick="selectDateToMeet"
+        android:text="Select a date"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_1" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@color/colorPrimary"
+        android:onClick="bookEvent"
+        android:text="Match"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_date" />
+
+</android.support.constraint.ConstraintLayout>
