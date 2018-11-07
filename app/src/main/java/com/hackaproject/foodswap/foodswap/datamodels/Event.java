@@ -8,6 +8,14 @@ public class Event {
     private String status;
     private String partnerId;
 
+    public Event(String uid, String food, String date, String status, String partnerId) {
+        this.uid = uid;
+        this.food = food;
+        this.date = date;
+        this.status = status;
+        this.partnerId = partnerId;
+    }
+
     public String getUid() {
         return uid;
     }

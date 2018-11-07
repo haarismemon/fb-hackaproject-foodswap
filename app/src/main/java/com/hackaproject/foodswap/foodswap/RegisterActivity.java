@@ -125,7 +125,6 @@ public class RegisterActivity extends AppCompatActivity {
                         String email = profile.getString("email");
                         String userId = jsonResponse.getString("uid");
 
-                        sharedPreferences.edit().putString(HomeActivity.LOGGED_IN_EMAIL, email).apply();
                         sharedPreferences.edit().putString(HomeActivity.LOGGED_IN_UID, userId).apply();
 
                         Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);

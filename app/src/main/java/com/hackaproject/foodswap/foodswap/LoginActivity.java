@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -57,14 +58,11 @@ public class LoginActivity extends AppCompatActivity {
                     int responseStatus = jsonResponse.getInt("status");
 
                     if (responseStatus == 1) {
-                        JSONObject profile = jsonResponse.getJSONObject("profile");
-                        String email = profile.getString("email");
                         String userId = jsonResponse.getString("uid");
-
-                        sharedPreferences.edit().putString(HomeActivity.LOGGED_IN_EMAIL, email).apply();
                         sharedPreferences.edit().putString(HomeActivity.LOGGED_IN_UID, userId).apply();
 
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);

@@ -6,12 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -22,18 +23,25 @@ import com.hackaproject.foodswap.foodswap.datamodels.Event;
 import com.hackaproject.foodswap.foodswap.requests.ListRequest;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class HomeActivity extends AppCompatActivity {
 
-    public static final String LOGGED_IN_EMAIL = "LOGGED_IN_EMAIL";
     public static final String LOGGED_IN_UID = "LOGGED_IN_UID";
-    private String loggedInEmail;
     private String loggedInUID;
+
+    private RecyclerAdapter recyclerAdapter;
+    private RecyclerView recyclerView;
+    private List<Event> eventsList;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +49,13 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("DATA", Context.MODE_PRIVATE);
-//        sharedPreferences.edit().putString(LOGGED_IN_EMAIL, null).apply();
 //        sharedPreferences.edit().putString(LOGGED_IN_UID, null).apply();
-        loggedInEmail = sharedPreferences.getString(LOGGED_IN_EMAIL, null);
         loggedInUID = sharedPreferences.getString(LOGGED_IN_UID, null);
 
-        if(loggedInEmail == null || loggedInUID == null) {
+        recyclerView = findViewById(R.id.eventsListView);
+        eventsList = new ArrayList<>();
+
+        if(loggedInUID == null) {
             Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -62,8 +71,24 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
 
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setFocusable(false);
+            recyclerAdapter = new RecyclerAdapter(this, eventsList);
+            recyclerView.setAdapter(recyclerAdapter);
+
             //make a list request on startup
             updateEventList();
+
+            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    updateEventList();
+                    Toast.makeText(HomeActivity.this, "Events refreshed", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -72,32 +97,32 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 try {
-                    Toast.makeText(HomeActivity.this, "Response Received", Toast.LENGTH_SHORT).show();
                     JSONObject jsonResponse = new JSONObject(response);
                     int responseStatus = jsonResponse.getInt("status");
 
                     if (responseStatus == 1) {
+
                         List<Event> events = new ArrayList<>();
 
                         JSONArray jsonArray = jsonResponse.getJSONArray("list");
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                            Event event = new Event();
-                            event.setUid(jsonObject.getString("uid"));
-                            event.setFood(jsonObject.getString("food"));
-                            event.setDate(jsonObject.getString("date"));
-                            event.setStatus(jsonObject.getString("status"));
-                            event.setPartnerId(jsonObject.getString("partnerid"));
+                            Event event = new Event(jsonObject.getString("uid"),
+                                    jsonObject.getString("food"),
+                                    parseDate(jsonObject.getString("date")),
+                                    jsonObject.getString("status"),
+                                    jsonObject.getString("partnerid"));
 
                             events.add(event);
                         }
 
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(HomeActivity.this,
-                                android.R.layout.simple_list_item_1, android.R.id.text1, getEventStrings(events));
+                        recyclerAdapter.eventsList = events;
+                        recyclerAdapter.notifyDataSetChanged();
 
-                        ListView listView = findViewById(R.id.eventsListView);
-                        listView.setAdapter(adapter);
+                        if (swipeRefreshLayout.isRefreshing()) {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
                     } else {
                         showErrorDialog("List Retrieval Failed. Response code: " + responseStatus);
                     }
@@ -116,6 +141,23 @@ public class HomeActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(HomeActivity.this);
         queue.add(listRequest);
         queue.start();
+    }
+
+    private String parseDate(String dateUTC) {
+        DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Date date = null;
+        try {
+            date = utcFormat.parse(dateUTC);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        DateFormat gmtFormat = new SimpleDateFormat("dd/MM/yyyy");
+        gmtFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+        return gmtFormat.format(date);
     }
 
     private void showErrorDialog(String message) {
