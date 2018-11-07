@@ -93,24 +93,20 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void submit(View view) {
         Toast.makeText(this, "Submit button clicked", Toast.LENGTH_SHORT).show();
-        User user = new User();
 
-        user.setFirst_name(input_first_name.getText().toString());
-        user.setLast_name(input_last_name.getText().toString());
-        user.setEmail(input_email.getText().toString());
+        String userPassword = "";
 
         String password1 = input_password_1.getText().toString();
         String password2 = input_password_2.getText().toString();
-        if(password1.equals(password2)) {
-            user.setPassword(input_password_1.getText().toString());
-        } else {
-            Toast.makeText(this, "The passwords do not match. Please re-enter.", Toast.LENGTH_SHORT).show();
-        }
 
-        user.setGender(input_gender.getSelectedItem().toString());
-        user.setNationality(input_nationality.getText().toString());
-        user.setDietary(input_dietary.getText().toString());
-        user.setDob(input_dob.getText().toString());
+        User user = new User(input_first_name.getText().toString(),
+                input_last_name.getText().toString(),
+                input_gender.getSelectedItem().toString(),
+                input_email.getText().toString(),
+                input_password_1.getText().toString(),
+                input_nationality.getText().toString(),
+                input_dietary.getText().toString(),
+                input_dob.getText().toString());
 
         RegisterRequest registerRequest = new RegisterRequest(user, new Response.Listener<String>() {
             @Override
@@ -144,13 +140,18 @@ public class RegisterActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("FoodSwap", "Register. Error Message. Failed Response" + error);
+                Log.e("FoodSwap", "Register. Error Message. Failed Response" + error);
             }
         });
 
         RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
-        queue.add(registerRequest);
         queue.start();
+
+        if(password1.equals(password2)) {
+            queue.add(registerRequest);
+        } else {
+            Toast.makeText(this, "The passwords do not match. Please re-enter.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void selectDate(View view) {

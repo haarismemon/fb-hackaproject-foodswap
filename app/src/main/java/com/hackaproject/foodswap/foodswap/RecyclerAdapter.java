@@ -3,19 +3,25 @@ package com.hackaproject.foodswap.foodswap;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.hackaproject.foodswap.foodswap.datamodels.Event;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<EventRowViewHolder> {
 
     public List<Event> eventsList;
     private HomeActivity context;
+    public static final String EVENT_ID = "EVENT_ID";
 
     public RecyclerAdapter(HomeActivity context, List<Event> eventsList) {
         this.eventsList = eventsList;
@@ -48,17 +54,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<EventRowViewHolder> {
             holder.statusIcon.setImageResource(R.drawable.ic_done_black_24dp);
         }
 
-//        StatusIconTint.setTint(context, holder.applicationStatusIcon, stage);
-
-        //go to Application Information when item in Applications List is clicked
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //todo create and go to new page for viewing bookings
-//                //else a single click will take you to the application information page
-//                Intent intent = new Intent(context, ApplicationInformationActivity.class);
-//                intent.putExtra(ApplicationTable.COLUMN_ID, event.getApplicationID());
-//                context.startActivity(intent);
+                if(event.getEventid() != null) {
+                    Intent intent = new Intent(context, MatchedEventActivity.class);
+                    intent.putExtra(EVENT_ID, event.getEventid());
+                    context.startActivity(intent);
+                } else {
+                    Toast.makeText(context, "Event still pending. Finding you a match!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -66,5 +71,22 @@ public class RecyclerAdapter extends RecyclerView.Adapter<EventRowViewHolder> {
     @Override
     public int getItemCount() {
         return eventsList.size();
+    }
+
+    private String parseDate(String dateUTC) {
+        DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Date date = null;
+        try {
+            date = utcFormat.parse(dateUTC);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        DateFormat gmtFormat = new SimpleDateFormat("dd/MM/yyyy");
+        gmtFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+        return gmtFormat.format(date);
     }
 }

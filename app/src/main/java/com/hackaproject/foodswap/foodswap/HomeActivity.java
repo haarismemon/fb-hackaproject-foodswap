@@ -108,7 +108,10 @@ public class HomeActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                            Event event = new Event(jsonObject.getString("uid"),
+                            Event event = new Event(
+                                    "0", //todo
+//                                    jsonObject.getString("eventid"),
+                                    jsonObject.getString("uid"),
                                     jsonObject.getString("food"),
                                     parseDate(jsonObject.getString("date")),
                                     jsonObject.getString("status"),
