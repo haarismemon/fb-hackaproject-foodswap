@@ -1,4 +1,4 @@
-package com.hackaproject.foodswap.foodswap.DataModel;
+package com.hackaproject.foodswap.foodswap.datamodels;
 
 public class User {
 
@@ -10,6 +10,17 @@ public class User {
     private String nationality;
     private String dietary;
     private String dob;
+
+    public User(String first_name, String last_name, String gender, String email, String password, String nationality, String dietary, String dob) {
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.gender = gender;
+        this.email = email;
+        this.password = password;
+        this.nationality = nationality;
+        this.dietary = dietary;
+        this.dob = dob;
+    }
 
     public String getFirst_name() {
         return first_name;

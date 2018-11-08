@@ -8,14 +8,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.hackaproject.foodswap.foodswap.requests.LoginRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,19 +27,16 @@ public class LoginActivity extends AppCompatActivity {
     private EditText login_password;
     private TextView login_register;
 
-    public static final String LOGGED_IN = "LOGGED_IN";
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        final SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("DATA", Context.MODE_PRIVATE);
+        sharedPreferences = getApplicationContext().getSharedPreferences("DATA", Context.MODE_PRIVATE);
 
-        login_email = (EditText) findViewById(R.id.login_email);
-        login_password = (EditText) findViewById(R.id.login_password);
         login_register = (TextView) findViewById(R.id.login_register);
-
         login_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,26 +44,26 @@ public class LoginActivity extends AppCompatActivity {
                 LoginActivity.this.startActivity(intent);
             }
         });
+    }
+
+    public void loginButton(View view) {
+        login_email = (EditText) findViewById(R.id.login_email);
+        login_password = (EditText) findViewById(R.id.login_password);
 
         LoginRequest registerRequest = new LoginRequest(login_email.getText().toString(), login_password.getText().toString(), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
                     JSONObject jsonResponse = new JSONObject(response);
-                    boolean success = jsonResponse.getBoolean("success");
+                    int responseStatus = jsonResponse.getInt("status");
 
-                    if (success) {
-                        String first_name = jsonResponse.getString("first_name");
-                        String last_name = jsonResponse.getString("last_name");
-                        String email = jsonResponse.getString("email");
+                    if (responseStatus == 1) {
+                        String userId = jsonResponse.getString("uid");
+                        sharedPreferences.edit().putString(HomeActivity.LOGGED_IN_UID, userId).apply();
 
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                        intent.putExtra("first_name", first_name);
-                        intent.putExtra("last_name", last_name);
-                        intent.putExtra("email", email);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
-
-                        sharedPreferences.edit().putBoolean(LOGGED_IN, true).apply();
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
                         builder.setMessage("Login Failed")
@@ -80,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("FoodSwap", "Error Message. Failed Login Response" + error);
+                Log.d("FoodSwap", "Login. Error Message. Failed Login Response" + error);
             }
         });
 

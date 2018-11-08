@@ -1,15 +1,15 @@
-package com.hackaproject.foodswap.foodswap;
+package com.hackaproject.foodswap.foodswap.requests;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
-import com.hackaproject.foodswap.foodswap.DataModel.User;
+import com.hackaproject.foodswap.foodswap.datamodels.User;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class RegisterRequest extends StringRequest {
 
-    private static final String REGISTER_REQUEST_URL = "https://localhost:4000/users/signup";
+    private static final String REGISTER_REQUEST_URL = "https://foodswapapp.herokuapp.com/users/signup";
     private Map<String, String> params;
 
     public RegisterRequest(User user, Response.Listener<String> listener, Response.ErrorListener errorListener) {
