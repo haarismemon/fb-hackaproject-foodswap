@@ -74,7 +74,8 @@
             status: 0 - fail, 1 - success
             msg: success or error message
             list: a list of user's event (a list of List objects)
-                  { uid: id of the owner/user of the event,
+                  { id: id of the event,
+                    uid: id of the owner/user of the event,
                     food: the food user wants to cook,
                     status: the status of this event, can be 0-pending, 1-confirm, 2-done,
                     date: the date to meet up in the format of 'YYYY-MM-DD',
