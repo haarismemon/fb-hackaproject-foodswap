@@ -157,17 +157,33 @@ router.post('/newevent', function(req, res, next){
     //check if event exists on the same date
     List.findOne({where:{uid:eventA.uid, date:eventA.date}})
         .then(function(result){
+        //put this inside async to make sure eventA is updated
         if(result == null){
             console.log("No clash, continue to insert event into List.");
             List.create(eventA)
                 .then(function(result){
                     console.log("Event created!");
-                    eventA = result;
+                    eventA = JSON.parse(JSON.stringify(result));//doing a hard copy of the content of the object
                     res.json({
                         status: 1,
                         msg:'Created new event.',
-                        event_object: result
+                        event_object: eventA
                     });
+                    /************** matching part starts from here ***************/
+                    console.log("Matching start: event object:"+JSON.stringify(result)+" and list id: "+result.id);
+                    User.findOne({where:{id:result.uid}}) //Using event uid to find owner A
+                        .then(function(userA){
+                        let query = 'SELECT List.id AS id, uid FROM List, User WHERE List.uid = User.id AND User.nationality !=\''+ userA.nationality+'\' AND status=0 AND date='+ JSON.stringify(result.date) +' LIMIT 1';
+                        sequelize.query(query,{type: sequelize.QueryTypes.SELECT}).then(function(userB){
+                            if(userB.length == 0)return;
+                            else{ //update the fields
+                                console.log("User B: "+userB+" list id "+userB[0].id+", userid "+userB[0].uid);
+                                List.update({status:1, partnerid:userB[0].uid},{where:{id:result.id}});//update A's event info if eventA.reload() works...
+                                List.update({status:1, partnerid:result.uid},{where:{id:userB[0].id}});//update B's event info
+                            }
+                        });
+                    });
+                /************** matching part ends ******************/
                 })
                 .catch(function(err){
                     console.log('DB error: '+err);
@@ -185,20 +201,7 @@ router.post('/newevent', function(req, res, next){
                 event_object: null
             });
         }
-    /************** matching part starts from here ***************/
-        User.findOne({where:{id:eventA.uid}}) //Using event uid to find owner A
-            .then(function(userA){
-            let query = 'SELECT List.id AS id, uid FROM List, User WHERE List.uid = User.id AND User.nationality !=\''+ userA.nationality+'\' AND status=0 AND date=\''+ eventA.date +'\' LIMIT 1';
-            sequelize.query(query,{type: sequelize.QueryTypes.SELECT}).then(function(userB){
-                if(userB == null)return;
-                else{ //update the fields
-                    console.log("User B: "+userB+" list id "+userB[0].id+", userid "+userB[0].uid);
-                    List.update({status:1, partnerid:userB[0].uid},{where:{id:eventA.id}});//update A's event info if eventA.reload() works...
-                    List.update({status:1, partnerid:eventA.uid},{where:{id:userB[0].id}});//update B's event info
-                }
-            });
-        });
-    /************** matching part ends ******************/
+    //original place for the matching code
     });
 });
 
@@ -230,9 +233,11 @@ router.post('/checkevent',function(req, res, next){
             .then(function(eventA){
             if(eventA.status != 0){//This event is paired already, so include also the partner's info in the response json
                 //Do a raw query which is faster and less code
-                let query = 'SELECT uid AS id, food, nationality, lname, fname, gender, dietary, dob FROM List, User WHERE List.uid=' + eventA.partnerid +' AND List.uid = User.id AND List.date =\''+eventA.date+'\';';
+                console.log("Date format: "+JSON.stringify(eventA.date));
+                let query = 'SELECT uid AS id, food, nationality, lname, fname, gender, dietary, dob FROM List, User WHERE List.uid=' + eventA.partnerid +' AND List.uid = User.id AND List.date ='+JSON.stringify(eventA.date)+';';
 
                 sequelize.query(query,{type: sequelize.QueryTypes.SELECT}).then(function(partner_info){
+                    console.log("partner_info is: "+ partner_info);
                     return res.json({
                         status: 1,
                         msg:'Event is found and it is paired, should be able to access partner_info(an event object) from the response.',
