@@ -84,6 +84,7 @@ public class BookPlanActivity extends AppCompatActivity {
                             Toast.makeText(BookPlanActivity.this, "Event created!", Toast.LENGTH_SHORT).show();
 
                             Intent intent = new Intent(BookPlanActivity.this, HomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                         } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(BookPlanActivity.this);

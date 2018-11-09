@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +22,8 @@ import com.hackaproject.foodswap.foodswap.requests.GiphyRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Random;
 
 public class MatchedEventActivity extends AppCompatActivity {
 
@@ -67,21 +71,28 @@ public class MatchedEventActivity extends AppCompatActivity {
                     JSONObject jsonResponse = new JSONObject(response);
                     int responseStatus = jsonResponse.getInt("status");
 
+                    Log.i("FoodSwap", jsonResponse.toString());
                     if (responseStatus == 1) {
-
                         JSONObject jsonObject = jsonResponse.getJSONObject("partner_info");
 
                         String fname = jsonObject.getString("fname");
+                        String dietary = jsonObject.getString("dietary");
+
+                        if(dietary.equals("nil")) {
+                            dietary = "None";
+                        }
 
                         userName.setText("You've been paired with " + fname + " " + jsonObject.getString("lname"));
                         userNationality.setText("Their ethnicity is: " + jsonObject.getString("nationality"));
-                        userDietary.setText("Their dietary requirements are: " + jsonObject.getString("dietary"));
-                        userFoodToCook.setText(fname + " will be cooking " + jsonObject.getString("food") + " for you!");
+                        userDietary.setText("Their dietary requirements are: " + dietary);
+
+                        String foodString = fname + " will be cooking <b>" + jsonObject.getString("food") + "</b> for you!";
+                        userFoodToCook.setText(Html.fromHtml(foodString));
 
                         getSetRandomGifImage();
 
                     } else {
-                        showErrorDialog("List Retrieval Failed. Response code: " + responseStatus);
+                        showErrorDialog("Checked Event Retrieval Failed. Response code: " + responseStatus);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -90,7 +101,7 @@ public class MatchedEventActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("FoodSwap", "Matched Event. Error Message. Failed Response" + error);
+                Log.e("FoodSwap", "Checked Event. Error Message. Failed Response" + error);
                 showErrorDialog("Matched Event Retrieval Failed.");
             }
         });
@@ -103,8 +114,9 @@ public class MatchedEventActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 try {
+                    Random random = new Random();
                     JSONObject gifImageJson = new JSONObject(response)
-                            .getJSONObject("data")
+                            .getJSONArray("data").getJSONObject(random.nextInt(25))
                             .getJSONObject("images")
                             .getJSONObject("fixed_height");
 
@@ -114,7 +126,6 @@ public class MatchedEventActivity extends AppCompatActivity {
 
                     Log.i("FoodSwap", url);
 
-//                    Picasso.get().load(url).into(celeberateImage);
                     Glide.with(getApplicationContext()).load(url).into(celeberateImage);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -128,7 +139,6 @@ public class MatchedEventActivity extends AppCompatActivity {
         });
 
         queue.add(giphyRequest);
-
     }
 
     private void showErrorDialog(String message) {
@@ -144,4 +154,6 @@ public class MatchedEventActivity extends AppCompatActivity {
                 .show();
     }
 
+    public void rematch(View view) {
+    }
 }
