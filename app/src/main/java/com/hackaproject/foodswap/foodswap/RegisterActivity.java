@@ -124,6 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
                         sharedPreferences.edit().putString(HomeActivity.LOGGED_IN_UID, userId).apply();
 
                         Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     } else {
                         Log.i("FoodSwap", jsonResponse.toString());

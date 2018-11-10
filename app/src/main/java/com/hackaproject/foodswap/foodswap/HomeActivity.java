@@ -5,12 +5,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -48,8 +48,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+//        // Attaching the layout to the toolbar object
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+//        // Setting toolbar as the ActionBar with setSupportActionBar() call
+//        setSupportActionBar(toolbar);
+
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("DATA", Context.MODE_PRIVATE);
-//        sharedPreferences.edit().putString(LOGGED_IN_UID, null).apply();
         loggedInUID = sharedPreferences.getString(LOGGED_IN_UID, null);
 
         recyclerView = findViewById(R.id.eventsListView);
@@ -60,16 +64,6 @@ public class HomeActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         } else {
-
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(HomeActivity.this, BookPlanActivity.class);
-                    startActivity(intent);
-                }
-            });
 
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(layoutManager);
@@ -109,8 +103,7 @@ public class HomeActivity extends AppCompatActivity {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                             Event event = new Event(
-                                    "0", //todo
-//                                    jsonObject.getString("eventid"),
+                                    jsonObject.getString("id"),
                                     jsonObject.getString("uid"),
                                     jsonObject.getString("food"),
                                     parseDate(jsonObject.getString("date")),

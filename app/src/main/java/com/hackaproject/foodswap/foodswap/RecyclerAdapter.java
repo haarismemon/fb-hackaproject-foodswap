@@ -57,7 +57,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<EventRowViewHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(event.getEventid() != null) {
+                if(event.getEventid() != null && !event.getStatus().equals("0")) {
                     Intent intent = new Intent(context, MatchedEventActivity.class);
                     intent.putExtra(EVENT_ID, event.getEventid());
                     context.startActivity(intent);

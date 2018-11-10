@@ -9,13 +9,13 @@ import java.util.Map;
 
 public class GiphyRequest extends StringRequest {
 
-    private static final String GIPHY_RANDOM_URL = "http://api.giphy.com/v1/gifs/random?";
+    private static final String GIPHY_RANDOM_URL = "http://api.giphy.com/v1/gifs/search?";
     private static final String API_KEY = "BTDuQbWeIejB4hyKIyHP7fwOVuqS7ULS";
-    private static final String TAG = "celebrate";
+    private static final String TAG = "yay";
 
 
     public GiphyRequest(Response.Listener<String> listener, Response.ErrorListener errorListener) {
-        super(Method.GET, GIPHY_RANDOM_URL + "tag=" + TAG + "&api_key=" + API_KEY, listener, errorListener);
+        super(Method.GET, GIPHY_RANDOM_URL + "q=" + TAG + "&api_key=" + API_KEY, listener, errorListener);
     }
 
 }
