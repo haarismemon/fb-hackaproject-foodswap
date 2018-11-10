@@ -136,3 +136,19 @@
                             gender: gender of the partner, 
                             dietary: dietary requirement of the partner, 
                             dob: date of birth of the partner}
+                            
+
+## Rematch event request
+
+1. HTTP method is `POST`
+
+2. URL is `https://foodswapapp.herokuapp.com/users/rematch`
+
+3. Content-Type is `application/json`
+
+4. Require JSON that contains just the 'id' of the event to be unmatched
+   
+5. The response from the server on succesful request is a JSON with 4 fields: 
+
+            status: 0 - fail, 1 - success
+            msg: success or error message

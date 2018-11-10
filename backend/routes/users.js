@@ -267,4 +267,87 @@ router.post('/checkevent',function(req, res, next){
 });
 
 
+/***
+ *  Rematch event
+ *  req: id (of the event)
+ *  Return status: 0 - fail, 1 - success
+ *         msg: success or error message
+ *
+ ***/ 
+router.post('/rematch',function(req, res, next){
+    let id = parseInt(req.body.id);
+    console.log('Debug: event id is '+id);
+    
+    List.findOne({where:{id:id}})
+        .then(function(event){
+            //reset partner's event first
+            List.update({status:0, partnerid:null},{where:{uid: event.partnerid, date:event.date}})
+                .then(function(updated){
+                /************** matching part for partner starts from here ***************/
+                    console.log("Matching start for partner:");
+                    User.findOne({where:{id:updated.uid}}) //Using event uid to find owner A
+                        .then(function(partner){
+                        let query = 'SELECT List.id AS id, uid FROM List, User WHERE List.partnerid != '+event.uid+' List.uid = User.id AND User.nationality !=\''+ partner.nationality+'\' AND status=0 AND date='+ JSON.stringify(event.date) +' LIMIT 1';
+                        sequelize.query(query,{type: sequelize.QueryTypes.SELECT}).then(function(userB){
+                            if(userB.length == 0)return;
+                            else{ //update the fields
+                                console.log("UserB: "+userB+" list id "+userB[0].id+", userid "+userB[0].uid);
+                                List.update({status:1, partnerid:userB[0].uid},{where:{id:updated.id}});
+                                List.update({status:1, partnerid:updated.uid},{where:{id:userB[0].id}});//update userB's event info
+                            }
+                        });
+                    });
+                /************** matching part for partner ends ******************/
+                })
+                .catch(function(err){
+                    console.log("DB error: " + err);
+                    res.json({
+                        status: 0,
+                        msg:'DB error: ' + err
+                    });
+                });
+
+            //reset user's event
+            List.update({status:0, partnerid:null},{where:{id:id}})
+                .then(function(updated){
+                /************** matching part for user starts from here ***************/
+                    console.log("Matching start for the original user:");
+                    User.findOne({where:{id:updated.uid}}) //Using event uid to find owner A
+                        .then(function(userA){
+                        let query = 'SELECT List.id AS id, uid FROM List, User WHERE List.partnerid != '+event.partnerid+' List.uid = User.id AND User.nationality !=\''+ userA.nationality+'\' AND status=0 AND date='+ JSON.stringify(event.date) +' LIMIT 1';
+                        sequelize.query(query,{type: sequelize.QueryTypes.SELECT}).then(function(userB){
+                            if(userB.length == 0)return;
+                            else{ //update the fields
+                                console.log("User B: "+userB+" list id "+userB[0].id+", userid "+userB[0].uid);
+                                List.update({status:1, partnerid:userB[0].uid},{where:{id:event.id}});
+                                List.update({status:1, partnerid:event.uid},{where:{id:userB[0].id}});//update B's event info
+                            }
+                        });
+                    });
+                /************** matching part for user ends ******************/
+                })
+                .catch(function(err){
+                    console.log("DB error: " + err);
+                    res.json({
+                        status: 0,
+                        msg:'DB error: ' + err
+                    });
+                });
+            console.log("Have reset 2 events.");
+        
+            res.json({
+                status: 1,
+                msg:'Success!'
+            });
+        })
+        .catch(function(err){
+            console.log("DB error: " + err);
+            res.json({
+                status: 0,
+                msg:'DB error: ' + err
+            });
+        });
+});
+
+
 module.exports = router;
