@@ -19,6 +19,7 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.hackaproject.foodswap.foodswap.requests.CheckEventRequest;
 import com.hackaproject.foodswap.foodswap.requests.GiphyRequest;
+import com.hackaproject.foodswap.foodswap.requests.RematchRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -155,5 +156,34 @@ public class MatchedEventActivity extends AppCompatActivity {
     }
 
     public void rematch(View view) {
+        RematchRequest rematchRequest = new RematchRequest(eventId, new Response.Listener<String>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonResponse = new JSONObject(response);
+                    int responseStatus = jsonResponse.getInt("status");
+
+                    Log.i("FoodSwap", jsonResponse.toString());
+                    if (responseStatus == 1) {
+                        Intent intent = new Intent(MatchedEventActivity.this, HomeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    } else {
+                        showErrorDialog("Rematch Event Retrieval Failed. Response code: " + responseStatus);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("FoodSwap", "Rematch Event. Error Message. Failed Response" + error);
+                showErrorDialog("Rematch Event Retrieval Failed.");
+            }
+        });
+
+        queue.add(rematchRequest);
     }
 }
