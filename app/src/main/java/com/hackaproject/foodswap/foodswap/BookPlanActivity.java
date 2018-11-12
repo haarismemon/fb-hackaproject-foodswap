@@ -61,7 +61,7 @@ public class BookPlanActivity extends AppCompatActivity {
                 String dayOfMonth = Integer.toString(day);
                 dayOfMonth = (dayOfMonth.length() == 1) ? "0" + dayOfMonth : dayOfMonth;
 
-                String date = year + "-" + dayOfMonth + "-" + dayOfMonth;
+                String date = year + "-" + monthOfYear + "-" + dayOfMonth;
                 dateText.setText(date);
             }
         };
