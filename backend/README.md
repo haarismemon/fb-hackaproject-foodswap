@@ -56,6 +56,7 @@
 5. The response from the server on succesful request is a JSON object with 2 fields: 
 
             status: 0 - fail, 1 - success
+            uid: user's id, null on bad request
             msg: success or error message
 
 

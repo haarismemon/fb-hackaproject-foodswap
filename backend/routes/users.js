@@ -9,6 +9,7 @@ var List = require("../models/List")
 /***
  *  User signup
  *  Return status: 0 - fail, 1 - success
+ *         uid: user's id
  *         msg: success or error message
  */
 router.post('/signup', function(req, res, next){
@@ -33,6 +34,7 @@ router.post('/signup', function(req, res, next){
                     console.log('User created.');
                     res.json({
                         status: 1,
+                        uid: result.id,
                         msg: 'Success. User created.'
                     });
                 })
@@ -40,6 +42,7 @@ router.post('/signup', function(req, res, next){
                     console.log('User insert Error! '+error);
                     res.json({
                         status: 0,
+                        uid:null,
                         msg: 'User insert Error! '+error
                     });
                 }); 
@@ -48,6 +51,7 @@ router.post('/signup', function(req, res, next){
             console.log('User already exists.');
             res.json({
                 status: 0,
+                uid:null,
                 msg: 'User already exists.'
             });
         }
@@ -280,43 +284,46 @@ router.post('/rematch',function(req, res, next){
     
     List.findOne({where:{id:id}})
         .then(function(event){
-            //reset partner's event first
-            List.update({status:0, partnerid:null},{where:{uid: event.partnerid, date:event.date}})
-                .then(function(updated){
-                /************** matching part for partner starts from here ***************/
-                    console.log("Matching start for partner:");
-                    User.findOne({where:{id:updated.uid}}) //Using event uid to find owner A
-                        .then(function(partner){
-                        let query = 'SELECT List.id AS id, uid FROM List, User WHERE List.partnerid != '+event.uid+' List.uid = User.id AND User.nationality !=\''+ partner.nationality+'\' AND status=0 AND date='+ JSON.stringify(event.date) +' LIMIT 1';
-                        sequelize.query(query,{type: sequelize.QueryTypes.SELECT}).then(function(userB){
-                            if(userB.length == 0)return;
-                            else{ //update the fields
-                                console.log("UserB: "+userB+" list id "+userB[0].id+", userid "+userB[0].uid);
-                                List.update({status:1, partnerid:userB[0].uid},{where:{id:updated.id}});
-                                List.update({status:1, partnerid:updated.uid},{where:{id:userB[0].id}});//update userB's event info
-                            }
-                        });
-                    });
-                /************** matching part for partner ends ******************/
-                })
-                .catch(function(err){
-                    console.log("DB error: " + err);
-                    res.json({
-                        status: 0,
-                        msg:'DB error: ' + err
-                    });
-                });
+                //reset partner's event first
+            List.update({status:0, partnerid:null},{where:{uid: event.partnerid, date:event.date}});
+//                .then(function(result){
+//                /************** matching part for partner starts from here ***************/
+//                    console.log("Matching starts for partner:");
+//                    //console.log("the result after update is: "+ JSON.stringify(updated));
+//                    User.findOne({where:{id:event.partnerid}}) //Using partner by id
+//                        .then(function(partner){
+//                        let query = 'SELECT List.id AS id, uid FROM List, User WHERE List.id != '+event.id+' AND List.uid = User.id AND User.nationality !=\"'+ partner.nationality+'\" AND status=0 AND date='+ JSON.stringify(event.date) +' LIMIT 1';
+//                        sequelize.query(query,{type: sequelize.QueryTypes.SELECT}).then(function(userB){
+//                            if(userB.length == 0){
+//                                console.log('No new match for the partner.');
+//                            }
+//                            else{ //update the fields
+//                                console.log("UserB: "+userB+" list id "+userB[0].id+", userid "+userB[0].uid);
+//                                List.update({status:1, partnerid:userB[0].uid},{where:{uid:event.partnerid, date:event.date}});
+//                                List.update({status:1, partnerid:event.partnerid},{where:{id:userB[0].id}});//update userB's event info
+//                            }
+//                        });
+//                    });
+//                /************** matching part for partner ends ******************/
+//                })
+//                .catch(function(err){
+//                    console.log("DB error: " + err);
+//                    res.json({
+//                        status: 0,
+//                        msg:'DB error: ' + err
+//                    });
+//                });
 
             //reset user's event
             List.update({status:0, partnerid:null},{where:{id:id}})
-                .then(function(updated){
+                .then(function(result){
                 /************** matching part for user starts from here ***************/
-                    console.log("Matching start for the original user:");
-                    User.findOne({where:{id:updated.uid}}) //Using event uid to find owner A
+                    console.log("Matching starts for the original user:");
+                    User.findOne({where:{id:event.uid}}) //Using event uid to find owner A
                         .then(function(userA){
-                        let query = 'SELECT List.id AS id, uid FROM List, User WHERE List.partnerid != '+event.partnerid+' List.uid = User.id AND User.nationality !=\''+ userA.nationality+'\' AND status=0 AND date='+ JSON.stringify(event.date) +' LIMIT 1';
+                        let query = 'SELECT List.id AS id, uid FROM List, User WHERE List.uid != '+event.partnerid+' AND List.uid = User.id AND User.nationality !=\"'+ userA.nationality+'\" AND status=0 AND date='+ JSON.stringify(event.date) +' LIMIT 1';
                         sequelize.query(query,{type: sequelize.QueryTypes.SELECT}).then(function(userB){
-                            if(userB.length == 0)return;
+                            if(userB.length == 0){console.log('No new match for the original user.');}
                             else{ //update the fields
                                 console.log("User B: "+userB+" list id "+userB[0].id+", userid "+userB[0].uid);
                                 List.update({status:1, partnerid:userB[0].uid},{where:{id:event.id}});
