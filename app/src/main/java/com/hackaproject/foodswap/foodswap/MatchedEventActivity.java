@@ -31,13 +31,12 @@ public class MatchedEventActivity extends AppCompatActivity {
     private String eventId;
     private ImageView celeberateImage;
     private TextView userName;
-//    private TextView userLast;
-//    private TextView userGender;
     private TextView userNationality;
     private TextView userDietary;
-//    private TextView userDOB;
     private TextView userFoodToCook;
     private RequestQueue queue;
+
+    public static final String REMATCH = "REMATCH";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,6 +166,7 @@ public class MatchedEventActivity extends AppCompatActivity {
                     Log.i("FoodSwap", jsonResponse.toString());
                     if (responseStatus == 1) {
                         Intent intent = new Intent(MatchedEventActivity.this, HomeActivity.class);
+                        intent.putExtra(REMATCH, eventId);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     } else {

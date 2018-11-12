@@ -1,7 +1,9 @@
 package com.hackaproject.foodswap.foodswap;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +51,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<EventRowViewHolder> {
         } else if(event.getStatus().equals("1")) {
             //confirm
             holder.statusIcon.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
+            ((CardView) holder.itemView).setCardBackgroundColor(Color.parseColor("#fff4dd"));
         } else if(event.getStatus().equals("2")) {
             //done
             holder.statusIcon.setImageResource(R.drawable.ic_done_black_24dp);
@@ -88,5 +91,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<EventRowViewHolder> {
         gmtFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
         return gmtFormat.format(date);
+    }
+
+    public Event findEvent(String eventId) {
+        for (Event event : eventsList) {
+            if(eventId.equals(event.getEventid())) {
+                return event;
+            }
+        }
+        return null;
     }
 }

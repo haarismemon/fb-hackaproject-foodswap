@@ -31,6 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -85,7 +87,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String dayOfMonth = Integer.toString(day);
                 dayOfMonth = (dayOfMonth.length() == 1) ? "0" + dayOfMonth : dayOfMonth;
 
-                String date = year + "-" + dayOfMonth + "-" + dayOfMonth;
+                String date = year + "-" + monthOfYear + "-" + dayOfMonth;
                 input_dob.setText(date);
             }
         };
@@ -99,9 +101,15 @@ public class RegisterActivity extends AppCompatActivity {
         String password1 = input_password_1.getText().toString();
         String password2 = input_password_2.getText().toString();
 
+        Map<String, String> genderMap = new HashMap<>();
+        genderMap.put("Male", "0");
+        genderMap.put("Female", "1");
+        genderMap.put("Other", "2");
+        genderMap.put("Prefer not to say", "3");
+
         User user = new User(input_first_name.getText().toString(),
                 input_last_name.getText().toString(),
-                input_gender.getSelectedItem().toString(),
+                genderMap.get(input_gender.getSelectedItem().toString()),
                 input_email.getText().toString(),
                 input_password_1.getText().toString(),
                 input_nationality.getText().toString(),
@@ -117,8 +125,6 @@ public class RegisterActivity extends AppCompatActivity {
                     int responseStatus = jsonResponse.getInt("status");
 
                     if (responseStatus == 1) {
-                        JSONObject profile = jsonResponse.getJSONObject("profile");
-                        String email = profile.getString("email");
                         String userId = jsonResponse.getString("uid");
 
                         sharedPreferences.edit().putString(HomeActivity.LOGGED_IN_UID, userId).apply();

@@ -84,6 +84,18 @@ public class HomeActivity extends AppCompatActivity {
                     Toast.makeText(HomeActivity.this, "Events refreshed", Toast.LENGTH_SHORT).show();
                 }
             });
+
+            String rematchedEventID = getIntent().getStringExtra(MatchedEventActivity.REMATCH);
+            if(rematchedEventID != null) {
+                Event rematchedEvent = recyclerAdapter.findEvent(rematchedEventID);
+                Log.i("FoodSwap", "Event found? : " + rematchedEvent);
+
+                if(rematchedEvent != null && rematchedEvent.getStatus().equals("1")) {
+                    Log.i("FoodSwap", "event successfully rematched");
+                    Toast.makeText(this, "Event on " + rematchedEvent.getDate() + " has been rematched!!", Toast.LENGTH_LONG).show();
+                    getIntent().removeExtra(MatchedEventActivity.REMATCH);
+                }
+            }
         }
     }
 
